@@ -41,7 +41,7 @@ const selection = [
   "INPUT_DATE",
   "SELECT_LIST",
   "RADIO_BUTTON",
-  "SELECT_IMAGE",
+  "SELECT_FILE",
   "LOCATION"
 ];
 
@@ -514,8 +514,8 @@ const CreateForms = () => {
                               label={t("Include in final")}
                             />
                           </Grid>
-                          {(rows[index]?.selection == "SELECT_LIST" ||
-                            rows[index]?.selection == "RADIO_BUTTON") && (
+                          {(rows[index]?.selection === "SELECT_LIST" ||
+                            rows[index]?.selection === "RADIO_BUTTON") && (
                               <Grid item xs={12}>
                                 {options.map((option, ind) => (
                                   <TextField
