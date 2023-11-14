@@ -83,6 +83,7 @@ const DocumentManagement = () => {
   const [selectedFolderToDelete, setSelectedFolderToDelete] = useState('')
   const [selectedSubfolderToDelete, setSelectedSubfolderToDelete] = useState('')
   const [selectedFolder, setSelectedFolder] = useState("");
+  const [isSearch, setIsSearch] = useState(false);
 
   // console.log("API_BASE_URL",API_BASE_URL);
 
@@ -147,14 +148,15 @@ const DocumentManagement = () => {
     }
   }, [isEdited, currentDirectory, isTriggered])
 
-  const getData = async (search = "") => {
+  const getData = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/ateeb/directories?search=${search}`)
+      const response = await axios.get(`${API_BASE_URL}/ateeb/directories`)
       // setFileNameForSearch("");
       setCurrentDirectory((prev) => ({
         ...prev,
         folderList: response.data,
       }))
+      setIsSearch(false);
     } catch (error) {
       // console.log(error);
       setMessage(t('Network error refresh the page'))
@@ -167,10 +169,10 @@ const DocumentManagement = () => {
     setHasSubdirectories(currentDirectory.subFolderList.length > 0)
   }, [currentDirectory.subFolderList])
 
-  const getSubFolder = async (directory, search = "") => {
+  const getSubFolder = async (directory) => {
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/ateeb/subdirectories?directoryname=${directory}&search=${search}`)
+      const response = await axios.get(`${API_BASE_URL}/ateeb/subdirectories?directoryname=${directory}`)
 
       // Check if the response data is an empty array (no subdirectories)
       if (response.data.length === 0) {
@@ -185,6 +187,7 @@ const DocumentManagement = () => {
           inSubDirectory: false,
           inFiles: false,
         }))
+        setIsSearch(false);
       } else {
         setSelectedFolder(directory)
         // setFileNameForSearch("");
@@ -205,17 +208,18 @@ const DocumentManagement = () => {
     }
   }
 
-  const getFiles = async (subdirectory, search = "") => {
+  const getFiles = async (subdirectory) => {
     setSelectedSubfolder(subdirectory)
     const directoryname = `${currentDirectory.selectedFolderName}/${subdirectory}/${currentDirectory.selectedSubFolderName}`
     try {
-      const response = await axios.get(`${API_BASE_URL}/ateeb/getFiles?directoryname=${directoryname}&search=${search}`)
+      const response = await axios.get(`${API_BASE_URL}/ateeb/getFiles?directoryname=${directoryname}`)
       // setFileNameForSearch("");
       setCurrentDirectory((prev) => ({
         ...prev,
         fileLists: response.data,
         inFiles: true,
       }))
+      setIsSearch(false);
     } catch (error) {
       setMessage('Network error refresh the page')
       setAlertSeverty('error')
@@ -229,6 +233,7 @@ const DocumentManagement = () => {
         directory={currentDirectory.selectedFolderName}
         subfolder={selectedSubfolder}
         filename={filename}
+        isSearch={isSearch}
       />
     )
   }
@@ -241,7 +246,7 @@ const DocumentManagement = () => {
 
   const handleUploadFiles = () => {
     setSelectedFiles([])
-    fetch(`${API_BASE_URL}/rules`)
+    fetch(`${API_BASE_URL}/ateeb/rules`)
       .then((response) => response.json())
       .then((data) => {
         if (data.count <= 0) {
@@ -448,17 +453,21 @@ const DocumentManagement = () => {
   }
 
   const searchForFile = () => {
-    if (currentDirectory.inSubDirectory) {
-      if (currentDirectory.inFiles) {
-        getFiles(selectedSubfolder, fileNameForSearch)
-      } else {
-        getSubFolder(selectedFolder, fileNameForSearch)
-      }
-    } else {
-      getData(fileNameForSearch)
-    }
-
-
+    axios.get(`${API_BASE_URL}/ateeb/searchFiles?search=${fileNameForSearch}`).then((res) => {
+      console.log(res.data)
+      setIsSearch(true);
+      setCurrentDirectory((prev) => ({
+        ...prev,
+        selectedFolderName: 'search',
+        subFolderList: ["search"],
+        inSubDirectory: true,
+        selectedSubFolderName: '',
+        folderList: ["search", "search"],
+        fileLists: res.data,
+        inFiles: true,
+        showUpOneLevelButton: true,
+      }))
+    })
   }
 
   return (
@@ -553,7 +562,24 @@ const DocumentManagement = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     {currentDirectory.showUpOneLevelButton && (
                       <Button
-                        onClick={() => {
+                        onClick={async () => {
+                          if (isSearch) {
+                            await getData()
+                            setCurrentDirectory((prev) => {
+                              return {
+                                ...prev,
+                                selectedFolderName: '',
+                                subFolderList: [],
+                                selectedSubFolderName: '',
+                                fileLists: [],
+                                inSubDirectory: false,
+                                inFiles: false,
+                                showUpOneLevelButton: true,
+                              }
+                            })
+                            setIsSearch(true)
+                            return;
+                          }
                           if (currentDirectory.inFiles) {
                             setCurrentDirectory((prev) => ({
                               ...prev,

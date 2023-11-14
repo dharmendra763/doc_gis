@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
-import ReactSelect from 'react-select';
-import Iconify from 'src/components/iconify/Iconify';
+import React, { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
+import ReactSelect from "react-select";
+import Iconify from "src/components/iconify/Iconify";
 import {
   Card,
   CardContent,
@@ -30,32 +30,32 @@ import {
   Paper,
   TableHead,
   CircularProgress,
-} from '@mui/material';
-import Scrollbar from 'src/components/scrollbar/Scrollbar';
-import { UserListHead, UserListToolbar } from 'src/sections/@dashboard/user';
-import { useTranslation } from 'react-i18next';
-import { MapboxGLComponent } from 'src/components/MapBoxGL';
-import LocationInput from 'src/components/MapInput';
-import moment from 'moment';
-import MaterialTable from 'material-table';
-import axios from 'axios';
-import { tableIcons } from 'src/constants/tableIcons';
-import { excerpt } from 'src/utils/helperFunction';
+} from "@mui/material";
+import Scrollbar from "src/components/scrollbar/Scrollbar";
+import { UserListHead, UserListToolbar } from "src/sections/@dashboard/user";
+import { useTranslation } from "react-i18next";
+import { MapboxGLComponent } from "src/components/MapBoxGL";
+import LocationInput from "src/components/MapInput";
+import moment from "moment";
+import MaterialTable from "material-table";
+import axios from "axios";
+import { tableIcons } from "src/constants/tableIcons";
+import { excerpt } from "src/utils/helperFunction";
 
 const GisAdmin = () => {
   const { t } = useTranslation();
   const [selected, setSelected] = useState([]);
-  const [filterName, setFilterName] = useState('');
-  const [parcelNumber, setParcelNumber] = useState('');
-  const [notes, setNotes] = useState('');
+  const [filterName, setFilterName] = useState("");
+  const [parcelNumber, setParcelNumber] = useState("");
+  const [notes, setNotes] = useState("");
   const [editMode, setEditMode] = useState(false);
-  const [userName, setUserName] = useState('');
-  const [userRoleSelected, setUserRoleSelected] = useState('');
-  const [mapSec, setMapSec] = useState('gisList');
-  const [gpsPoints, setGpsPoints] = useState(['', '', '']);
+  const [userName, setUserName] = useState("");
+  const [userRoleSelected, setUserRoleSelected] = useState("");
+  const [mapSec, setMapSec] = useState("gisList");
+  const [gpsPoints, setGpsPoints] = useState(["", "", ""]);
   const [userList, setUserList] = React.useState([]);
   const [userRole, setUserRole] = React.useState([]);
-  const [fileUrl, setFileUrl] = useState('');
+  const [fileUrl, setFileUrl] = useState("");
   const [selectedUsersList, setSelectedUsers] = useState([]);
   const [parcelData, setParcelData] = useState([]);
   const [gpsCords, setGpscords] = useState([]);
@@ -63,13 +63,13 @@ const GisAdmin = () => {
   const [open, setOpen] = useState(false);
   const [uploadSec, setUploadSec] = useState(false);
   const [noteSec, setNoteSec] = useState(false);
-  const [newNote, setNewNote] = useState('');
+  const [newNote, setNewNote] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [userId, setUserId] = useState(null);
-  const [ownerRole, setOwnerRole] = React.useState('');
+  const [ownerRole, setOwnerRole] = React.useState("");
   const [selectedUserss, setSelectedUserss] = useState([]);
   const [allOwners, setAllOwners] = useState([]);
-  const [owner, setOwner] = useState('');
+  const [owner, setOwner] = useState("");
   const [editValues, setEditValues] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const [isOwnerUpdate, setIsOwnerUpdate] = useState(false);
@@ -80,7 +80,7 @@ const GisAdmin = () => {
   const apiUploadUrl = process.env.REACT_APP_UPLOAD_URL;
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => {
-    setOwner('');
+    setOwner("");
     setOpenModal(false);
     setEditMode(false);
   };
@@ -89,7 +89,7 @@ const GisAdmin = () => {
     if (!edit) {
       const data =
         parcelDetailsD?.owners?.length > 0
-          ? parcelDetailsD.owners + ',' + selectedUserss.join(',')
+          ? parcelDetailsD.owners + "," + selectedUserss.join(",")
           : selectedUserss.join();
       // console.log('ABC: ', data);
       axios
@@ -98,38 +98,38 @@ const GisAdmin = () => {
         })
         .then((response) => {
           setIsOwnerUpdate(!isOwnerUpdate);
-          alert(t('Owner Added successfully'), response);
+          alert(t("Owner Added successfully"), response);
           handleCloseModal();
         })
         .catch((error) => {
-          console.error('An error occurred while updating data:', error);
+          console.error("An error occurred while updating data:", error);
         });
     } else {
       const data = allOwners.map((value) => value.value);
       axios
         .put(`${apiUrl}/gisadmin_owners/${parcelDetailsD?.sn}`, {
-          owners: data.join(','),
+          owners: data.join(","),
         })
         .then((response) => {
           setIsOwnerUpdate(!isOwnerUpdate);
-          alert('Owners Deleted successfully', response);
+          alert("Owners Deleted successfully", response);
           handleCloseModal();
         })
         .catch((error) => {
-          console.error('An error occurred while updating data:', error);
+          console.error("An error occurred while updating data:", error);
         });
     }
   };
 
   const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     width: 400,
     height: 320,
-    bgcolor: 'background.paper',
-    borderRadius: '8px',
+    bgcolor: "background.paper",
+    borderRadius: "8px",
     boxShadow: 24,
     p: 4,
   };
@@ -139,7 +139,7 @@ const GisAdmin = () => {
     if (parcelDetailsD?.owners?.length > 0) {
       // console.log('True: ', parcelDetailsD.owners);
       setAllOwners(
-        parcelDetailsD?.owners?.split(',').map((value) => {
+        parcelDetailsD?.owners?.split(",").map((value) => {
           return { value, label: value };
         })
       );
@@ -155,16 +155,16 @@ const GisAdmin = () => {
   };
 
   const TABLE_HEAD = [
-    { id: 'id', label: t('SL NO'), alignRight: false },
-    { id: 'initiator_role', label: t('Parcel Number'), alignRight: false },
+    { id: "id", label: t("SL NO"), alignRight: false },
+    { id: "initiator_role", label: t("Parcel Number"), alignRight: false },
     {
-      id: 'initiator_role_optional',
-      label: t('Date created'),
+      id: "initiator_role_optional",
+      label: t("Date created"),
       alignRight: false,
     },
-    { id: 'workflow_prefix', label: t('Created By'), alignRight: false },
-    { id: 'form_name', label: t('See Parcel'), alignRight: false },
-    { id: 'reviewer', label: t('Edit Parcel'), alignRight: false },
+    { id: "workflow_prefix", label: t("Created By"), alignRight: false },
+    { id: "form_name", label: t("See Parcel"), alignRight: false },
+    { id: "reviewer", label: t("Edit Parcel"), alignRight: false },
     //   { id: 'final_approval', label: 'Final Approval', alignRight: false },
   ];
 
@@ -174,7 +174,7 @@ const GisAdmin = () => {
   };
 
   useEffect(() => {
-    let userDetails = JSON.parse(localStorage.getItem('adminInfo'));
+    let userDetails = JSON.parse(localStorage.getItem("adminInfo"));
     getData();
     setUserName(userDetails?.full_name);
     getRole();
@@ -192,8 +192,8 @@ const GisAdmin = () => {
   };
 
   const handleAddGpsPoint = () => {
-    const newGpsPoints = [...gpsPoints, ''];
-    if (gpsPoints.some((point) => point === '')) {
+    const newGpsPoints = [...gpsPoints, ""];
+    if (gpsPoints.some((point) => point === "")) {
       alert(t("Please Enter The Above GPS Points"));
       return false;
     }
@@ -237,61 +237,56 @@ const GisAdmin = () => {
             `${apiUrl}/gisadmin-update/${editValues.sn}`,
             finalDetails
           );
-
           // console.log('Response:', response.data);
           alert(t("Parcel updated"));
           window.location.reload();
         } catch (error) {
-          console.error('Error:', error);
+          console.error("Error:", error);
         }
       }
     } else {
       // Handle save logic here
       let finalDetails = {
         parcel: parcelNumber,
-        date: `${moment().format('YYYY-MM-DD HH:mm:ss')}`,
+        date: `${moment().format("YYYY-MM-DD HH:mm:ss")}`,
         notes: JSON.stringify([{ msg: notes, addedBy: userName }]),
         username: userName,
         gpspoints: JSON.stringify(gpsPoints),
         userrole: userRoleSelected,
         userlist: JSON.stringify(selectedUsersList),
-        documents: '',
+        documents: "",
       };
       // console.log(finalDetails)
 
       try {
         const response = await axios.post(`${apiUrl}/gisadmin`, finalDetails);
-
         // console.log('Response:', response.data);
-        alert('Parcel created');
+        alert("Parcel created");
         window.location.reload();
       } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
       }
     }
   };
 
   const fileUpload = async () => {
     let uploadLinks = await uploadFile(parcelNumber);
-
-    let oldDocs = parcelDetailsD.documents.split(',');
+    let oldDocs = parcelDetailsD.documents.split(",");
     const data = {
       ...parcelDetailsD,
-      documents: [...oldDocs, ...uploadLinks].join(','),
+      documents: [...oldDocs, ...uploadLinks].join(","),
     };
-
     const id = parcelDetailsD.parcel; // Replace 'your-id' with the actual ID
-
     axios
       .put(`${apiUrl}/gisadmin/${id}`, data)
       .then((response) => {
         alert(t("Data updated successfully"));
         setUploadSec(false);
-        setFileUrl('');
+        setFileUrl("");
         // Handle the successful response here
       })
       .catch((error) => {
-        console.error('An error occurred while updating data:', error);
+        console.error("An error occurred while updating data:", error);
         // Handle the error response here
       });
   };
@@ -309,43 +304,34 @@ const GisAdmin = () => {
       notes: JSON.stringify([...newNotes, ...oldNotes]),
     };
     // console.log(data);
-    const id = parcelDetailsD.parcel
-
-
+    const id = parcelDetailsD.parcel;
     axios
       .put(`${apiUrl}/gisadmin/${id.split("/").join("_")}`, data)
       .then((response) => {
-        alert('Data updated successfully');
+        alert("Data updated successfully");
         setNoteSec(false);
         getData();
       })
       .catch((error) => {
-        console.error('An error occurred while updating data:', error);
+        console.error("An error occurred while updating data:", error);
       });
   };
-
 
   const uploadFile = async (parcel) => {
     const formData = new FormData();
     // formData.append("file", fileUrl);
     // console.log('FILEEEE', fileUrl);
     Array.from(fileUrl).forEach((file) => {
-      formData.append('files', file);
+      formData.append("files", file);
     });
-    formData.append('type', 'parcel');
-    formData.append('category', parcel);
-
+    formData.append("type", "parcel");
+    formData.append("category", parcel);
     try {
-      const response = await axios.post(
-        `${apiUploadUrl}/upload`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-
+      const response = await axios.post(`${apiUploadUrl}/upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       // Handle the response after successful upload
       // console.log(response.data);
       return response.data.downloadLinks;
@@ -357,7 +343,7 @@ const GisAdmin = () => {
   };
 
   React.useEffect(() => {
-    if (ownerRole !== '') {
+    if (ownerRole !== "") {
       axios
         .get(`${apiUrl}/user/${ownerRole}`)
         .then((res) => {
@@ -393,31 +379,35 @@ const GisAdmin = () => {
   // console.log('All Owners Userss: ', allOwners);
 
   const next = (edit) => {
-    if (parcelNumber === '') {
-      alert('Please Enter Parcel Number');
+    if (parcelNumber === "") {
+      alert("Please Enter Parcel Number");
       return false;
     }
     // if (notes === '') {
     //   alert('Please Provide the Note');
     //   return false;
     // }
-    if (gpsPoints[0] === '') {
-      alert('Please Fill Atleast 3 GPS points');
+
+    if (gpsPoints[0] === "") {
+      alert("Please Fill Atleast 3 GPS points");
       return false;
     }
-    if (gpsPoints[1] === '') {
-      alert('Please Fill Atleast 3 GPS points');
+
+    if (gpsPoints[1] === "") {
+      alert("Please Fill Atleast 3 GPS points");
       return false;
     }
-    if (gpsPoints[2] === '') {
-      alert('Please Fill Atleast 3 GPS points');
+    if (gpsPoints[2] === "") {
+      alert("Please Fill Atleast 3 GPS points");
       return false;
     }
+
     if (edit) {
       return true;
     }
+
     if (!edit) {
-      setMapSec('gisParcel2');
+      setMapSec("gisParcel2");
     }
   };
 
@@ -443,6 +433,7 @@ const GisAdmin = () => {
         const timestampB = new Date(b.date);
         return timestampB - timestampA; // Sort in descending order
       });
+
       setParcelData(sortedData);
       sortedData.map((details) => {
         if (details.parcel == parcelDetailsD?.parcel) {
@@ -455,8 +446,9 @@ const GisAdmin = () => {
       console.error(error);
     }
   };
+
   React.useEffect(() => {
-    if (userRoleSelected !== '') {
+    if (userRoleSelected !== "") {
       axios
         .get(`${apiUrl}/admin/${userRoleSelected}`)
         .then((res) => {
@@ -488,7 +480,7 @@ const GisAdmin = () => {
       setNotes(JSON.parse(editValues.notes)[0].msg);
       const gps = JSON.parse(editValues.gpspoints);
       setGpsPoints([gps[0], gps[1], gps[2]]);
-      setMapSec('gisParcel');
+      setMapSec("gisParcel");
     }
   }, [editValues]);
   // console.log('isEdit: ', isEdit);
@@ -501,59 +493,59 @@ const GisAdmin = () => {
       </Helmet>
       <Container>
         <Stack
-          direction='row'
-          alignItems='center'
-          justifyContent='space-between'
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
           mb={5}
         >
-          {mapSec === 'gisMap' ||
-            mapSec === 'gisParcel' ||
-            mapSec === 'gisParcel2' ||
-            mapSec === 'gisDetails' ? (
+          {mapSec === "gisMap" ||
+          mapSec === "gisParcel" ||
+          mapSec === "gisParcel2" ||
+          mapSec === "gisDetails" ? (
             <>
               <Button
-                variant='contained'
-                style={{ background: 'red' }}
+                variant="contained"
+                style={{ background: "red" }}
                 onClick={() => {
-                  setMapSec('gisList');
+                  setMapSec("gisList");
                   setIsEdit(false);
                   setEditValues({});
-                  setParcelNumber('');
-                  setNotes('');
-                  setGpsPoints(['', '', '']);
+                  setParcelNumber("");
+                  setNotes("");
+                  setGpsPoints(["", "", ""]);
                 }}
-                startIcon={<Iconify icon='mdi-light:cancel' />}
+                startIcon={<Iconify icon="mdi-light:cancel" />}
               >
-                {t('Cancel')}
+                {t("Cancel")}
               </Button>
             </>
           ) : (
             <>
-              <Typography variant='h4' gutterBottom>
+              <Typography variant="h4" gutterBottom>
                 {/* {t("Gis Admin")} */}
               </Typography>
-
               <Button
-                variant='contained'
-                onClick={() => setMapSec('gisParcel')}
-                startIcon={<Iconify icon='eva:plus-fill' />}
+                variant="contained"
+                onClick={() => setMapSec("gisParcel")}
+                startIcon={<Iconify icon="eva:plus-fill" />}
               >
-                {t('Add Parcel')}
+                {t("Add Parcel")}
               </Button>
             </>
           )}
         </Stack>
+
         <Card>
-          {mapSec === 'gisMap' ? (
+          {mapSec === "gisMap" ? (
             <MapboxGLComponent />
-          ) : mapSec === 'gisParcel' ? (
-            <div style={{ padding: '20px' }}>
+          ) : mapSec === "gisParcel" ? (
+            <div style={{ padding: "20px" }}>
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <TextField
-                    label={t('Parcel Number')}
-                    placeholder='Enter Parcel Number'
-                    type='text'
+                    label={t("Parcel Number")}
+                    placeholder="Enter Parcel Number"
+                    type="text"
                     value={parcelNumber}
                     onChange={(e) => {
                       setParcelNumber(e.target.value);
@@ -562,9 +554,9 @@ const GisAdmin = () => {
                     fullWidth
                   />
                   <TextField
-                    label={t('Notes')}
-                    placeholder='Enter Notes'
-                    type='text'
+                    label={t("Notes")}
+                    placeholder="Enter Notes"
+                    type="text"
                     value={notes}
                     onChange={(e) => {
                       setNotes(e.target.value);
@@ -574,14 +566,14 @@ const GisAdmin = () => {
                     fullWidth
                   />
                   <TextField
-                    label={t('Current Date and Time')}
-                    value={moment().format('YYYY-MM-DD HH:mm:ss')}
+                    label={t("Current Date and Time")}
+                    value={moment().format("YYYY-MM-DD HH:mm:ss")}
                     disabled
                     sx={{ mb: 3 }}
                     fullWidth
                   />
                   <TextField
-                    label={t('User Full Name')}
+                    label={t("User Full Name")}
                     value={userName}
                     disabled
                     fullWidth
@@ -590,21 +582,21 @@ const GisAdmin = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <TextField
-                    label={t('GPS Point 1 (Mandatory)')}
+                    label={t("GPS Point 1 (Mandatory)")}
                     value={gpsPoints[0]}
                     onChange={(e) => handleGpsPointChange(0, e.target.value)}
                     fullWidth
                     sx={{ mb: 3 }}
                   />
                   <TextField
-                    label={t('GPS Point 2 (Mandatory)')}
+                    label={t("GPS Point 2 (Mandatory)")}
                     value={gpsPoints[1]}
                     onChange={(e) => handleGpsPointChange(1, e.target.value)}
                     fullWidth
                     sx={{ mb: 3 }}
                   />
                   <TextField
-                    label={t('GPS Point 3 (Mandatory)')}
+                    label={t("GPS Point 3 (Mandatory)")}
                     value={gpsPoints[2]}
                     onChange={(e) => handleGpsPointChange(2, e.target.value)}
                     fullWidth
@@ -623,8 +615,8 @@ const GisAdmin = () => {
                     />
                   ))}
                   <Button
-                    variant='contained'
-                    color='primary'
+                    variant="contained"
+                    color="primary"
                     onClick={handleAddGpsPoint}
                     sx={{ m: 3 }}
                   >
@@ -633,14 +625,14 @@ const GisAdmin = () => {
                   <LocationInput />
                   <Box
                     sx={{
-                      width: '100%',
-                      display: 'flex',
-                      justifyContent: 'flex-end',
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "flex-end",
                     }}
                   >
                     <Button
-                      variant='contained'
-                      color='primary'
+                      variant="contained"
+                      color="primary"
                       onClick={() => {
                         if (isEdit) {
                           handleSave();
@@ -648,7 +640,7 @@ const GisAdmin = () => {
                           next();
                         }
                       }}
-                      sx={{ mt: 4, width: '140px', height: '44px' }}
+                      sx={{ mt: 4, width: "140px", height: "44px" }}
                     >
                       {t("Save")}
                     </Button>
@@ -656,19 +648,19 @@ const GisAdmin = () => {
                 </Grid>
               </Grid>
             </div>
-          ) : mapSec === 'gisParcel2' ? (
+          ) : mapSec === "gisParcel2" ? (
             <>
-              <div style={{ padding: '3vh' }}>
+              <div style={{ padding: "3vh" }}>
                 <Grid>
                   <Grid mb={4} item xs={8} sm={6}>
                     <FormControl fullWidth>
-                      <InputLabel id='User Role'>
+                      <InputLabel id="User Role">
                         {/* {t("Initiator Role")} */}
                         {t("User Role")}
                       </InputLabel>
                       <Select
-                        labelId='Admin Role'
-                        id='User Role'
+                        labelId="Admin Role"
+                        id="User Role"
                         value={userRoleSelected}
                         onChange={(event) =>
                           setUserRoleSelected(event.target.value)
@@ -684,23 +676,24 @@ const GisAdmin = () => {
                   </Grid>
                   <Grid mb={4} item xs={12} sm={12}>
                     <FormControl fullWidth>
-                      <InputLabel id='Users'>
+                      <InputLabel id="Users">
                         {/* {t("Users")} */}
-                        {t('Users')}
+                        {t("Users")}
                       </InputLabel>
                       <Select
-                        labelId='Users'
-                        id='Users'
+                        labelId="Users"
+                        id="Users"
                         multiple
                         value={selectedUsersList}
                         onChange={handleUserSelectChange}
-                        renderValue={(selected) => selected.join(', ')}
+                        renderValue={(selected) => selected.join(", ")}
                       >
                         {userList?.map((item) => (
                           <MenuItem key={item.value} value={item.value}>
                             <Checkbox
                               checked={selectedUsersList.includes(item.value)}
                             />
+
                             {item.label}
                           </MenuItem>
                         ))}
@@ -709,53 +702,62 @@ const GisAdmin = () => {
                   </Grid>
                 </Grid>
                 <Button
-                  variant='contained'
-                  color='primary'
+                  variant="contained"
+                  color="primary"
                   onClick={handleSave}
-                  size='large'
+                  size="large"
                 >
                   {t("Save")}
                 </Button>
               </div>
             </>
-          ) : mapSec === 'gisList' ? (
+          ) : mapSec === "gisList" ? (
             <>
               <Scrollbar>
                 <MaterialTable
-                localization={
-                  {
+                  localization={{
                     header: {
-                      actions: t("Actions")
-                    }
-                  }
-                }
-                  title=''
+                      actions: t("Actions"),
+                    },
+                    pagination: {
+                      labelRowsPerPage: t("Rows per page"),
+                      labelRowsSelect: t("rows"),
+                    },
+                    toolbar: {
+                      searchPlaceholder: t("Search"),
+                    },
+                    body: {
+                      deleteTooltip: t("Delete Navigation"),
+                      editTooltip: t("Edit Navigation"),
+                    },
+                  }}
+                  title=""
                   columns={[
                     {
-                      title: t('SL Number'),
+                      title: t("SL Number"),
                       render: (rowData) => rowData.tableData.id + 1,
                     },
                     {
-                      title: t('Parcel Number'),
-                      field: 'parcel',
+                      title: t("Parcel Number"),
+                      field: "parcel",
                       render: (rowData) => (
                         <div
                           onClick={() => {
                             setParcelDetialsD(rowData);
-                            setMapSec('gisDetails');
+                            setMapSec("gisDetails");
                           }}
                           style={{
                             background:
                               rowData.owners?.length > 0
-                                ? '#40da40'
-                                : 'rgb(239 90 90)',
-                            borderRadius: '25px',
-                            textAlign: 'center',
-                            color: 'black',
-                            fontWeight: '600',
-                            paddingTop: '10px',
-                            paddingBottom: '10px',
-                            cursor: 'pointer',
+                                ? "#40da40"
+                                : "rgb(239 90 90)",
+                            borderRadius: "25px",
+                            textAlign: "center",
+                            color: "black",
+                            fontWeight: "600",
+                            paddingTop: "10px",
+                            paddingBottom: "10px",
+                            cursor: "pointer",
                           }}
                         >
                           {rowData?.parcel}
@@ -763,25 +765,25 @@ const GisAdmin = () => {
                       ),
                     },
                     {
-                      title: t('Date Created'),
-                      field: 'date',
+                      title: t("Date Created"),
+                      field: "date",
                       render: (rowData) =>
-                        moment(rowData?.date).format('DD/MM/YYYY | h:mm A'),
+                        moment(rowData?.date).format("DD/MM/YYYY | h:mm A"),
                     },
                     {
-                      title: t('Created By'),
-                      field: 'username',
+                      title: t("Created By"),
+                      field: "username",
                     },
                     {
-                      title: t('Details'),
+                      title: t("Details"),
                       render: (rowData) => (
                         <Button
-                          variant='contained'
+                          variant="contained"
                           onClick={() => {
                             let cords = JSON.parse(rowData?.gpspoints);
                             setGpscords(
                               cords.map((item) => {
-                                let data = item.split(',');
+                                let data = item.split(",");
                                 return [Number(data[1]), Number(data[0])];
                               })
                             );
@@ -805,7 +807,7 @@ const GisAdmin = () => {
                   actions={[
                     {
                       icon: tableIcons.Edit,
-                      tooltip: t('Edit Parcel'),
+                      tooltip: t("Edit Parcel"),
                       onClick: (event, rowData) => {
                         handleUpdateRow(rowData);
                       },
@@ -814,7 +816,7 @@ const GisAdmin = () => {
                 />
               </Scrollbar>
             </>
-          ) : mapSec === 'gisDetails' ? (
+          ) : mapSec === "gisDetails" ? (
             <div>
               {/* {console.log('Parcel Details D: ', parcelDetailsD)} */}
               {parcelDetailsD != {} && (
@@ -823,13 +825,13 @@ const GisAdmin = () => {
                     <h2>{t("View Parcel Details")}</h2>
                     <Grid container spacing={2}>
                       <Grid item xs={5}>
-                        <InputLabel style={{ marginBottom: '2vh' }}>
+                        <InputLabel style={{ marginBottom: "2vh" }}>
                           {t("Parcel Number")} : {parcelDetailsD.parcel}
                         </InputLabel>
-                        <InputLabel style={{ marginBottom: '2vh' }}>
+                        <InputLabel style={{ marginBottom: "2vh" }}>
                           {t("Date Created")} : {parcelDetailsD.date}
                         </InputLabel>
-                        <InputLabel style={{ marginBottom: '2vh' }}>
+                        <InputLabel style={{ marginBottom: "2vh" }}>
                           {t("Created By")} : {parcelDetailsD.username}
                         </InputLabel>
                         <InputLabel>
@@ -838,7 +840,7 @@ const GisAdmin = () => {
                             {JSON.parse(parcelDetailsD?.gpspoints).map(
                               (item) => {
                                 return (
-                                  <li style={{ marginBottom: '1vh' }}>
+                                  <li style={{ marginBottom: "1vh" }}>
                                     {item}
                                   </li>
                                 );
@@ -848,43 +850,43 @@ const GisAdmin = () => {
                         </InputLabel>
                       </Grid>
                       <Grid item xs={5}>
-                        <InputLabel style={{ marginBottom: '2vh' }}>
+                        <InputLabel style={{ marginBottom: "2vh" }}>
                           {t("Parcel Owners")} :
                           <ol>
                             {parcelDetailsD.owners &&
-                              parcelDetailsD.owners.split(',').map((item) => {
+                              parcelDetailsD.owners.split(",").map((item) => {
                                 // const name = item.split(" - ")[1];
                                 return (
-                                  <li style={{ marginBottom: '1vh' }}>
+                                  <li style={{ marginBottom: "1vh" }}>
                                     {item}
                                   </li>
                                 );
                               })}
                           </ol>
                           <Button
-                            variant='contained'
-                            startIcon={<Iconify icon='eva:plus-fill' />}
-                            size='small'
+                            variant="contained"
+                            startIcon={<Iconify icon="eva:plus-fill" />}
+                            size="small"
                             onClick={() => {
                               handleOpenModal();
                               setEditMode(false);
                             }}
                           >
-                            {t('Add New Owner')}
+                            {t("Add New Owner")}
                           </Button>
                         </InputLabel>
                       </Grid>
                       <Grid item xs={2}>
                         <Button
-                          variant='contained'
-                          startIcon={<Iconify icon='eva:plus-fill' />}
-                          size='small'
+                          variant="contained"
+                          startIcon={<Iconify icon="eva:plus-fill" />}
+                          size="small"
                           disabled={!parcelDetailsD?.owners?.length > 0}
                           onClick={() => {
                             if (parcelDetailsD?.owners?.length > 0) {
                               setAllOwners(
                                 parcelDetailsD?.owners
-                                  ?.split(',')
+                                  ?.split(",")
                                   .map((value) => {
                                     return { value, label: value };
                                   })
@@ -894,142 +896,162 @@ const GisAdmin = () => {
                             setEditMode(true);
                           }}
                         >
-                          {t('Delete Owner')}
+                          {t("Delete Owner")}
                         </Button>
                       </Grid>
-
                       {/* // Documents here for the Upload Button  */}
-
                       <Grid item xs={7}>
                         <h3>{t("Documents")}</h3>
                       </Grid>
-
                       <Grid item xs={5}>
                         <label>
-                          { }
                           <input
                             onChange={(e) => {
                               setFileUrl(e.target.files);
                             }}
-                            type='file'
+                            type="file"
                             multiple
                             hidden
                           />
                           <Button
-                            variant='outlined'
-                            startIcon={<Iconify icon='eva:plus-fill' />}
-                            size='large'
-                            color='primary'
-                            component='span'
+                            variant="outlined"
+                            startIcon={<Iconify icon="eva:plus-fill" />}
+                            size="large"
+                            color="primary"
+                            component="span"
                           >
                             {fileUrl ? (
-                              <span>{excerpt(fileUrl['0']?.name, 15)}</span>
+                              <span>{excerpt(fileUrl["0"]?.name, 15)}</span>
                             ) : (
-                              t('Choose Document')
+                              t("Choose Document")
                             )}
                           </Button>
                         </label>
-
                         <Button
-                          variant='contained'
-                          startIcon={<Iconify icon='ph:upload' />}
-                          size='large'
-                          color='success'
-                          component='span'
+                          variant="contained"
+                          startIcon={<Iconify icon="ph:upload" />}
+                          size="large"
+                          color="success"
+                          component="span"
                           disabled={!fileUrl}
                           onClick={() => fileUpload()}
-                          style={{ marginRight: '6px', float: 'right' }}
+                          style={{ marginRight: "6px", float: "right" }}
                         >
-                          {t('Upload Document')}
+                          {t("Upload Document")}
                         </Button>
                       </Grid>
-
                       {/* // table here for the Documents  */}
-
                       <Grid item xs={12}>
                         <TableContainer component={Paper}>
                           <Table
                             sx={{ minWidth: 650 }}
-                            aria-label='simple table'
+                            aria-label="simple table"
                           >
                             <TableHead>
                               <TableRow>
                                 <TableCell>{t("Document Name")}</TableCell>
                                 {/* <TableCell>View</TableCell> */}
                                 <TableCell>{t("View/Download")}</TableCell>
+
                                 <TableCell>{t("Delete")}</TableCell>
                               </TableRow>
                             </TableHead>
+
                             <TableBody>
                               {/* {console.log(parcelDetailsD)} */}
+
                               {parcelDetailsD.documents
-                                .split(',')
+
+                                .split(",")
+
                                 .sort((a, b) => {
-                                  if (a.length !== 0 && b.length !== 0) return 0;
-                                  if (a.length !== 0 && b.length === 0) return 1;
+                                  if (a.length !== 0 && b.length !== 0)
+                                    return 0;
+
+                                  if (a.length !== 0 && b.length === 0)
+                                    return 1;
+
                                   return -1;
                                 })
+
                                 .map((item) => {
-                                  if (item != '') {
+                                  if (item != "") {
                                     return (
                                       <TableRow
                                         sx={{
-                                          '&:last-child td, &:last-child th': {
+                                          "&:last-child td, &:last-child th": {
                                             border: 0,
                                           },
                                         }}
                                       >
-                                        <TableCell component='th' scope='row'>
+                                        <TableCell component="th" scope="row">
                                           {
-                                            item.split('/')[
-                                            item.split('/').length - 1
+                                            item.split("/")[
+                                              item.split("/").length - 1
                                             ]
                                           }
                                         </TableCell>
-                                        {/* <TableCell>
-                                      <Button
-                                        variant="contained"
-                                        startIcon={<Iconify icon="tabler:eye" />}
-                                        size="small"
-                                      >
-                                        {t("View")}
-                                      </Button>
+
+                                        {/* <TableCell> 
+
+                                      <Button 
+
+                                        variant="contained" 
+
+                                        startIcon={<Iconify icon="tabler:eye" />} 
+
+                                        size="small" 
+
+                                      > 
+
+                                        {t("View")} 
+
+                                      </Button> 
+
                                     </TableCell> */}
+
                                         <TableCell>
                                           <Button
-                                            variant='contained'
+                                            variant="contained"
                                             startIcon={
-                                              <Iconify icon='ph:download' />
+                                              <Iconify icon="ph:download" />
                                             }
-                                            size='small'
+                                            size="small"
                                             onClick={() => {
                                               const a =
-                                                document.createElement('a');
+                                                document.createElement("a");
+
                                               a.href = item;
-                                              a.target = '_blank';
+
+                                              a.target = "_blank";
+
                                               a.download =
-                                                item.split('/')[
-                                                item.split('/').length - 1
+                                                item.split("/")[
+                                                  item.split("/").length - 1
                                                 ];
+
                                               document.body.appendChild(a);
+
                                               a.click();
+
                                               window.URL.revokeObjectURL(item);
                                             }}
                                           >
-                                            {t('View')}/{t('Download')}
+                                            {t("View")}/{t("Download")}
                                           </Button>
                                         </TableCell>
+
                                         <TableCell>
                                           <Button
-                                            variant='contained'
+                                            variant="contained"
                                             startIcon={
-                                              <Iconify icon='material-symbols:delete-outline' />
+                                              <Iconify icon="material-symbols:delete-outline" />
                                             }
-                                            size='small'
-                                            color='error'
+                                            size="small"
+                                            color="error"
                                             disabled
                                           >
-                                            {t('Delete')}
+                                            {t("Delete")}
                                           </Button>
                                         </TableCell>
                                       </TableRow>
@@ -1046,9 +1068,9 @@ const GisAdmin = () => {
                       <Grid item xs={8}>
                         {noteSec ? (
                           <TextField
-                            label='New Note'
-                            placeholder='Enter New Note'
-                            type='text'
+                            label="New Note"
+                            placeholder="Enter New Note"
+                            type="text"
                             onChange={(e) => {
                               setNewNote(e.target.value);
                             }}
@@ -1063,36 +1085,39 @@ const GisAdmin = () => {
                         {noteSec ? (
                           <>
                             <Button
-                              variant='contained'
-                              startIcon={<Iconify icon='eva:plus-fill' />}
-                              size='large'
-                              color='success'
+                              variant="contained"
+                              startIcon={<Iconify icon="eva:plus-fill" />}
+                              size="large"
+                              color="success"
                               onClick={() => notesUpdate()}
-                              style={{ marginRight: '10px' }}
+                              style={{ marginRight: "10px" }}
                             >
-                              {t('Add')}
+                              {t("Add")}
                             </Button>
+
                             <Button
-                              variant='contained'
-                              startIcon={<Iconify icon='eva:plus-fill' />}
-                              size='large'
-                              color='error'
+                              variant="contained"
+                              startIcon={<Iconify icon="eva:plus-fill" />}
+                              size="large"
+                              color="error"
                               onClick={() => setNoteSec(false)}
-                            // onClick={() => notesUpdate()}
+
+                              // onClick={() => notesUpdate()}
                             >
-                              {t('Cancel')}
+                              {t("Cancel")}
                             </Button>
                           </>
                         ) : (
                           <Button
-                            variant='contained'
-                            startIcon={<Iconify icon='eva:plus-fill' />}
-                            size='large'
-                            color='success'
+                            variant="contained"
+                            startIcon={<Iconify icon="eva:plus-fill" />}
+                            size="large"
+                            color="success"
                             onClick={() => setNoteSec(true)}
-                          // onClick={() => notesUpdate()}
+
+                            // onClick={() => notesUpdate()}
                           >
-                            {t('Add New Note')}
+                            {t("Add New Note")}
                           </Button>
                         )}
                       </Grid>
@@ -1101,27 +1126,38 @@ const GisAdmin = () => {
                         <TableContainer component={Paper}>
                           <Table
                             sx={{ minWidth: 650 }}
-                            aria-label='simple table'
+                            aria-label="simple table"
                           >
                             <TableHead>
                               <TableRow>
                                 <TableCell>{t("Note Title")}</TableCell>
+
                                 <TableCell>{t("Added By")}</TableCell>
                               </TableRow>
                             </TableHead>
+
                             <TableBody>
-                              {[...JSON.parse(parcelDetailsD?.notes).filter(note => !!note.msg), ...JSON.parse(parcelDetailsD?.notes).filter(note => !note.msg)].map((item) => {
+                              {[
+                                ...JSON.parse(parcelDetailsD?.notes).filter(
+                                  (note) => !!note.msg
+                                ),
+
+                                ...JSON.parse(parcelDetailsD?.notes).filter(
+                                  (note) => !note.msg
+                                ),
+                              ].map((item) => {
                                 return (
                                   <TableRow
                                     sx={{
-                                      '&:last-child td, &:last-child th': {
+                                      "&:last-child td, &:last-child th": {
                                         border: 0,
                                       },
                                     }}
                                   >
-                                    <TableCell component='th' scope='row'>
+                                    <TableCell component="th" scope="row">
                                       {item.msg}
                                     </TableCell>
+
                                     <TableCell>{item.addedBy}</TableCell>
                                   </TableRow>
                                 );
@@ -1134,15 +1170,17 @@ const GisAdmin = () => {
 
                     <Button
                       style={{
-                        position: 'fixed',
-                        width: '20vh',
-                        height: '4vh',
+                        position: "fixed",
+
+                        width: "20vh",
+
+                        height: "4vh",
                       }}
-                      variant='contained'
-                      color='error'
-                      onClick={() => setMapSec('gisList')}
+                      variant="contained"
+                      color="error"
+                      onClick={() => setMapSec("gisList")}
                     >
-                      {t('Close')}
+                      {t("Close")}
                     </Button>
                   </Box>
                 </div>
@@ -1152,42 +1190,51 @@ const GisAdmin = () => {
             <></>
           )}
         </Card>
+
         <Modal
           open={open}
           onClose={handleClose}
           sx={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'center',
-            marginTop: '10%',
+            display: "flex",
+
+            alignItems: "flex-start",
+
+            justifyContent: "center",
+
+            marginTop: "10%",
           }}
         >
-          <Box sx={{ width: 400, bgcolor: 'background.paper', p: 2 }}>
+          <Box sx={{ width: 400, bgcolor: "background.paper", p: 2 }}>
             <MapboxGLComponent customCords={gpsCords} />
+
             <Button onClick={handleClose}>{t("Close")}</Button>
           </Box>
         </Modal>
+
         <Modal
           open={openModal}
           onClose={handleCloseModal}
-          aria-labelledby='modal-modal-title'
-          aria-describedby='modal-modal-description'
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <Typography id='modal-modal-title' variant='h3' component='h2'>
-              {editMode ? 'Delete Owner' : 'Add Owner'}
+            <Typography id="modal-modal-title" variant="h3" component="h2">
+              {editMode ? "Delete Owner" : "Add Owner"}
             </Typography>
+
             {!editMode ? (
               <>
                 <Grid item xs={8} sm={6} my={2}>
                   <FormControl fullWidth>
-                    <InputLabel id='Owner Role'>{t('Owner Role')}</InputLabel>
+                    <InputLabel id="Owner Role">{t("Owner Role")}</InputLabel>
+
                     <Select
-                      labelId='Owner Role'
-                      id='Owner Role'
+                      labelId="Owner Role"
+                      id="Owner Role"
                       value={ownerRole}
                       onChange={(event) => {
                         setOwnerRole(event.target.value);
+
                         setSelectedUserss([]);
                       }}
                     >
@@ -1199,24 +1246,27 @@ const GisAdmin = () => {
                     </Select>
                   </FormControl>
                 </Grid>
+
                 <Grid item xs={8} sm={6}>
                   <FormControl fullWidth>
-                    <InputLabel id='initiator-role2'>
-                      {t('All Owners')}
+                    <InputLabel id="initiator-role2">
+                      {t("All Owners")}
                     </InputLabel>
+
                     <Select
-                      labelId='initiator-role2'
-                      id='initiator-role2'
+                      labelId="initiator-role2"
+                      id="initiator-role2"
                       multiple
                       value={selectedUserss}
                       onChange={handleSelectChange}
-                      renderValue={(selected) => selected.join(', ')}
+                      renderValue={(selected) => selected.join(", ")}
                     >
                       {userList?.map((item) => (
                         <MenuItem key={item.value} value={item.value}>
                           <Checkbox
                             checked={selectedUserss.includes(item.value)}
                           />
+
                           {item.label}
                         </MenuItem>
                       ))}
@@ -1231,49 +1281,68 @@ const GisAdmin = () => {
                 isSearchable={false}
                 value={allOwners}
                 // isDisabled
+
                 onChange={handleChange}
-              // components={{
-              //   MultiValueRemove: ({ innerProps }) => (
-              //     <span
-              //       {...innerProps}
-              //       onClick={() => {
-              //         console.log("Handle Remove Called: ", innerProps.data);
-              //         handleRemove(innerProps.data);
-              //       }}
-              //     >
-              //       &times;
-              //     </span>
-              //   ),
-              // }}
+
+                // components={{
+
+                //   MultiValueRemove: ({ innerProps }) => (
+
+                //     <span
+
+                //       {...innerProps}
+
+                //       onClick={() => {
+
+                //         console.log("Handle Remove Called: ", innerProps.data);
+
+                //         handleRemove(innerProps.data);
+
+                //       }}
+
+                //     >
+
+                //       &times;
+
+                //     </span>
+
+                //   ),
+
+                // }}
               />
             )}
+
             <Box
               sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-end',
+                display: "flex",
+
+                justifyContent: "space-between",
+
+                alignItems: "flex-end",
+
                 mt: 2,
               }}
             >
               <Button
-                variant='contained'
-                size='medium'
+                variant="contained"
+                size="medium"
                 onClick={() => {
                   handleCloseModal();
                 }}
               >
                 {t("Cancel")}
               </Button>
+
               <Button
-                variant='contained'
-                size='medium'
-                color='error'
+                variant="contained"
+                size="medium"
+                color="error"
                 onClick={() => handleAddOwner(editMode ? true : false)}
               >
                 {isOwnerLoading ? (
-                  <CircularProgress sx={{ color: 'white' }} size={22} />
+                  <CircularProgress sx={{ color: "white" }} size={22} />
                 ) : (
-                  t('Save')
+                  t("Save")
                 )}
               </Button>
             </Box>

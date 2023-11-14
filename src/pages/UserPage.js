@@ -284,13 +284,22 @@ export default function UserPage() {
             <Scrollbar>
               <TableContainer sx={{ minWidth: 800 }}>
                 <MaterialTable
-                localization={
-                  {
+                  localization={{
                     header: {
-                      actions: t("Actions")
-                    }
-                  }
-                }
+                      actions: t("Actions"),
+                    },
+                    pagination: {
+                      labelRowsPerPage: t("Rows per page"),
+                      labelRowsSelect: t("rows"),
+                    },
+                    toolbar: {
+                      searchPlaceholder: t("Search"),
+                    },
+                    body: {
+                      deleteTooltip: t("Delete Navigation"),
+                      editTooltip: t("Edit Navigation"),
+                    },
+                  }}
                   title=""
                   columns={[
                     {

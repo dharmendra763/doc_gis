@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import {
@@ -21,6 +21,8 @@ import Paper from "@mui/material/Paper";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 
+const adminDetail = localStorage.getItem("adminInfo");
+
 const WorkflowReviewer = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -31,8 +33,9 @@ const WorkflowReviewer = () => {
   const [statusCheck, setStatusCheck] = useState([]);
   const [adminLocal, setAdminLocal] = useState("");
   const [currentWorkflowId, setCurrentWorkflowId] = useState("");
+  const [formData, setFormData] = useState("");
   const [currentWorkflowPrefix, setCurrentWorkflowPrefix] = useState("");
-  const [] = useState();
+
   const apiUrl = process.env.REACT_APP_BASE_URL;
 
   useEffect(() => {
@@ -62,17 +65,37 @@ const WorkflowReviewer = () => {
     let allUD = parseData(item.initiator_users);
     // console.log("allUD", allUD);
     await setAllUsers(allUD);
-    console.log(item?.initiator_status);
 
     let statusD = StatusParseData(item?.initiator_status);
-    console.log(statusD);
-    setStatusCheck(statusD);
+    // setStatusCheck(statusD);
+    let ds = statusD.map((status) =>
+      getData(item.form_name, item.id, status.id)
+    );
+
+    Promise.all(ds).then((a) => {
+      setFormData(
+        a.map((a) => {
+          return a.data;
+        })
+      );
+      setStatusCheck(statusD);
+    });
     // console.log("item.initiator_status",item?.initiator_status);
     // console.log("statusD", statusD);
-
     setWfSection(true);
   };
 
+  console.log(formData);
+
+  const getData = async (formName, workflowId, userId) => {
+    try {
+      return axios.get(
+        `${apiUrl}/fetch-data/${formName}/${workflowId}/${userId}`
+      );
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   const parseData = (data) => {
     // Split the data string by comma and iterate over the resulting array
     const items = data.split(",");
@@ -105,14 +128,71 @@ const WorkflowReviewer = () => {
 
       return { id, name, reviewers, finalStatus, userStatus };
     });
-
     return formattedData;
   };
+
+  const handleReject = async (id) => {
+    const username = adminDetail.full_name;
+    const approvalStatus = "rejected";
+    const data = { username, approvalStatus };
+
+    try {
+      await callARApi(id, data);
+      await getData();
+      // await workflowUpdate("rejected")
+    } catch (error) {
+      console.error("Error Rejecting:", error);
+    }
+  };
+
+  const handleApprove = async (id) => {
+    const username = adminDetail.full_name;
+    const approvalStatus = "approved";
+    const data = { username, approvalStatus };
+
+    try {
+      await callARApi(id, data);
+      await reviewStatus(id);
+      // await workflowUpdate("approve")
+      await getData();
+    } catch (error) {
+      console.error("Error Approving:", error);
+    }
+  };
+
+  const reviewStatus = async (id) => {
+    const username = adminDetail.full_name;
+    const data = {
+      userid: id,
+      reviewerName: username,
+    };
+    try {
+      const url = `${apiUrl}/reviewer-status?workflowId=${workFlowD.id}`;
+      const response = await axios.put(url, data);
+      return response.data;
+    } catch (error) {
+      console.error("API Error:", error);
+      throw error;
+    }
+  };
+
+  const callARApi = async (id, data) => {
+    try {
+      const url = `${apiUrl}/reviewer-approval/${workFlowD.form_name}/${id}`;
+      const response = await axios.put(url, data);
+      return response.data;
+    } catch (error) {
+      console.error("API Error:", error);
+      throw error;
+    }
+  };
+
+  console.log(workFlowD);
 
   return (
     <>
       <Helmet>
-        <title>Reviewer Panel</title>
+        <title>{t("Reviewer Panel")}</title>
       </Helmet>
       <Container>
         <Stack
@@ -177,7 +257,9 @@ const WorkflowReviewer = () => {
                   <TableHead>
                     <TableRow>
                       <TableCell align="center">{t("Workflow ID")}</TableCell>
-                      <TableCell align="center">{t("User Full Name")}</TableCell>
+                      <TableCell align="center">
+                        {t("User Full Name")}
+                      </TableCell>
                       <TableCell align="center">{t("Status")}</TableCell>
                       <TableCell align="center">{t("Review")}</TableCell>
                     </TableRow>
@@ -190,7 +272,6 @@ const WorkflowReviewer = () => {
                           <TableCell align="center">{item?.name}</TableCell>
 
                           <TableCell align="center">
-
                             {statusCheck?.map((statt) => {
                               if (
                                 statt.id === item.id &&
@@ -208,7 +289,7 @@ const WorkflowReviewer = () => {
                                         variant="contained"
                                         color="info"
                                       >
-                                        Waiting
+                                        {"Waiting"}
                                       </Button>
                                     );
                                   } else if (
@@ -222,7 +303,7 @@ const WorkflowReviewer = () => {
                                         variant="contained"
                                         color="warning"
                                       >
-                                        Pending
+                                        {t("Pending")}
                                       </Button>
                                     );
                                   } else if (
@@ -236,7 +317,7 @@ const WorkflowReviewer = () => {
                                         variant="contained"
                                         color="error"
                                       >
-                                        Rejected
+                                        {t("Rejected")}
                                       </Button>
                                     );
                                   } else if (
@@ -250,7 +331,7 @@ const WorkflowReviewer = () => {
                                         variant="contained"
                                         color="success"
                                       >
-                                        Reviewed
+                                        {t("Reviewed")}
                                       </Button>
                                     );
                                   }
@@ -274,7 +355,7 @@ const WorkflowReviewer = () => {
                                 );
                               }}
                             >
-                              View
+                              {t("View")}
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -299,7 +380,8 @@ const WorkflowReviewer = () => {
                                 <AccountTreeOutlinedIcon />
                               </TableCell>
                               <TableCell style={{ fontWeight: "bold" }}>
-                                {item?.id} | {item?.workflow_prefix?.toUpperCase()}
+                                {item?.id} |{" "}
+                                {item?.workflow_prefix?.toUpperCase()}
                               </TableCell>
                               <TableCell style={{ fontWeight: "bold" }}>
                                 {item?.workflow_name?.toUpperCase()}

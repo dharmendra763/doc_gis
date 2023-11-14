@@ -257,11 +257,52 @@
 "Stock Number" : "Nr. Inventar",
 "Stock Name" : "Denumire",
 "Creation Date" : "Data creării",
-"Get Direction" : "Hartă" ,
 "Delete Navigation" : "Sterge",
 "Edit Navigation" : "Editează",
 "Rows per page": "Rânduri pe pagina",
-"rows" : "rânduri"
+"rows" : "rânduri",
+
+"Map" : "Hartă",
+"Get Current Location" : "Locația curentă",
+"Get Direction" : "Direcție",
+"Use Google Map" :  "Utilizează Google Map",
+"Use Apple Map" : "Utilizează Apple Map",
+
+
+"Navigation Details" : "Detalii Locație",
+"Stock number" : "Nr. Inventar",
+"Location Name" : "Nume Locație",
+"Point Latitude" : "Punct Latitudine",
+"Point Longitude" : "Punct Longitudine",
+"Image Link" : "Link Imagine",
+"Copy Link" : "Copiaza Link",
+"Open in New Tab" : "Deschide",
+"Creator Name" : "Creeat de",
+"Created date"  : "Creeat la data de",
+
+
+"Point GPS" : "Punct GPS",
+"Choose File " : "Selectează fișier",
+"No file chosen" : "Nu a fost selectat fișier",
+"Save " :"Salveaza",
+"Admin Name" : "Creeat de",
+"Image uploaded successfuly" : "Imagine încărcată cu succes",
+
+
+
+
+"Workflow details" : "Detalii flux",
+"Group by" : "Grup",
+"Workflow name" : "Tip cerere",
+"Initiators List" : "Lista initiatori",
+"Review" : "Revizuieste",
+
+"Create Notification " : "Creeaza o notificare",
+"Add picture" : "adauga imagine",
+"Expand Colapse" : "Extinde",
+"Colapse View" : "Restrange"
+
+
 
 
 }

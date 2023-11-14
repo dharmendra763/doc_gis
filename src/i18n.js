@@ -17,7 +17,7 @@ i18n
         translation: translationES,
       },
     },
-    lng: 'es', // Set the default language
+    lng: 'en', // Set the default language
     fallbackLng: 'en', // Fallback language if translation is missing
     interpolation: {
       escapeValue: false, // React already escapes the content, so no need for extra escaping

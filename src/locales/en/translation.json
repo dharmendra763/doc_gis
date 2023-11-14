@@ -247,5 +247,45 @@
 "All Reviewers":"All Reviewers",
 "Workflow Details": "Workflow Details",
 "Initiators Lists": "Initiators Lists",
-"INITIATE": "INITIATE"
+"INITIATE": "INITIATE",
+
+"Map" : "Map",
+"Get Current Location" : "Get Current Location",
+"Use Google Map" :  "Use Google Map",
+"Use Apple Map" : "Use Apple Map",
+
+
+
+"Navigation Details" : "Navigation Details",
+"Stock number" : "Stock number",
+"Location Name" : "Location Name",
+"Point Latitude" : "Point Latitude",
+"Point Longitude" : "Point Longitude",
+"Image Link" : "Image Link",
+"Copy Link" : "Copy Link",
+"Open in New Tab" : "Open in New Tab",
+"Creator Name" : "Creator Name",
+"Created date"  : "Created date",
+
+
+"Point GPS" : "Point GPS",
+"Choose File" : "Choose File",
+"No file chosen" : "No file chosen",
+"Admin Name" : "Admin Name",
+"Image uploaded successfuly" : "Image uploaded successfuly",
+
+"Workflow details" : "Workflow details",
+"Group by" : "Group by",
+"Workflow name" : "Workflow name",
+"Initiators List" : "Initiators List",
+"Review" : "Review",
+
+
+
+"Add picture" : "Add picture",
+"Expand Colapse" : "Expand Colapse",
+"Colapse View" : "Colapse View"
+
+
+
 }

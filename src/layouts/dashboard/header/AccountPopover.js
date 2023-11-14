@@ -14,27 +14,16 @@ import {
 } from "@mui/material";
 // mocks_
 import account from "../../../_mock/account";
+import { useTranslation } from "react-i18next";
 
 // ----------------------------------------------------------------------
 
-const MENU_OPTIONS = [
-  {
-    label: "Home",
-    icon: "eva:home-fill",
-  },
-  {
-    label: "Profile",
-    icon: "eva:person-fill",
-  },
-  // {
-  //   label: "Settings",
-  //   icon: "eva:settings-2-fill",
-  // },
-];
+
 
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
   const [adminInfo, setAdminInfo] = useState({});
   const [open, setOpen] = useState(null);
@@ -43,6 +32,21 @@ export default function AccountPopover() {
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
+
+  const MENU_OPTIONS = [
+    {
+      label: t("Home"),
+      icon: "eva:home-fill",
+    },
+    {
+      label: t("Profile"),
+      icon: "eva:person-fill",
+    },
+    // {
+    //   label: "Settings",
+    //   icon: "eva:settings-2-fill",
+    // },
+  ];
 
   const handleClose = () => {
     setOpen(null);
@@ -132,7 +136,7 @@ export default function AccountPopover() {
         <Divider sx={{ borderStyle: "dashed" }} />
 
         <MenuItem onClick={() => fnLogOut()} sx={{ m: 1 }}>
-          Logout
+          {t("Logout")}
         </MenuItem>
       </Popover>
     </>

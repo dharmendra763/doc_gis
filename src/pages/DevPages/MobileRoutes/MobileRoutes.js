@@ -231,7 +231,7 @@ function MobileRoutes() {
               {isLoading ? (
                 <CircularProgress sx={{ color: "white" }} size={20} />
               ) : (
-                "Save"
+                t("Save")
               )}
             </Button>
           </Box>

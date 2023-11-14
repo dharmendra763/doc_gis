@@ -8,10 +8,12 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import ImageViewComponent from "./ImageView";
 import { generateSignsHTML, handleGeneratePDF } from "./Utils";
+import { useTranslation } from "react-i18next";
 
 
 const FinalDetails = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { uid } = useParams();
   const [wfID, formName, itemId] = uid.split("&");
   const [fData, setFData] = useState([]);
@@ -139,10 +141,12 @@ const FinalDetails = () => {
     }
   }
 
+  console.log(fData);
+
   return (
     <>
       <Helmet>
-        <title>Reviewer Panel</title>
+        <title>{t("Reviewer Panel")}</title>
       </Helmet>
       <Container>
         <Stack
@@ -152,7 +156,7 @@ const FinalDetails = () => {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            Reviewer Panel - {wfD?.workflow_prefix}
+            {t("Reviewer Panel")} - {wfD?.workflow_prefix}
           </Typography>
         </Stack>
         <Button
@@ -162,7 +166,7 @@ const FinalDetails = () => {
           size="large"
           color="warning"
         >
-          Close
+          {t("Close")}
         </Button>
         <Card>
           <div style={{ padding: "2vh" }}>
@@ -175,6 +179,8 @@ const FinalDetails = () => {
                         <TableRow>
                           {/* Add a header for SN */}
                           <TableCell style={{ fontWeight: "bold" }}>SN</TableCell>
+                          <TableCell style={{ fontWeight: "bold" }}>WPfx</TableCell>
+                          <TableCell style={{ fontWeight: "bold" }}>Workflow Name</TableCell>
                           {Object.keys(fData[0])
                             .filter(
                               (key) =>
@@ -191,10 +197,10 @@ const FinalDetails = () => {
                               </TableCell>
                             ))}
                           <TableCell colSpan={2} style={{ fontWeight: "bold" }}>
-                            Reviewer's Status
+                            {t("Reviewer's Status")}
                           </TableCell>
-                          <TableCell style={{ fontWeight: "bold" }}>REV_COUNTS</TableCell>
-                          <TableCell style={{ fontWeight: "bold" }}>ACTION</TableCell>
+                          <TableCell style={{ fontWeight: "bold" }}>{t("REV_COUNTS")}</TableCell>
+                          <TableCell style={{ fontWeight: "bold" }}>{t("Actions")}</TableCell>
                         </TableRow>
                       </TableHead>
                       {/*TABLE BODY STARTS*/}
@@ -203,6 +209,8 @@ const FinalDetails = () => {
                           <TableRow key={rowIndex}>
                             {/* Display serial number starting from 1 */}
                             <TableCell>{rowIndex + 1}</TableCell>
+                            <TableCell>{wfD.workflow_prefix} {rowData.id}</TableCell>
+                            <TableCell>{wfD.workflow_name}</TableCell>
                             {Object.entries(rowData)
                               .filter(
                                 ([key]) =>
@@ -342,7 +350,7 @@ const FinalDetails = () => {
               </>
             ) : (
               <div>
-                <h4>No Data</h4>{" "}
+                <h4>{t("No Data")}</h4>{" "}
                 <Button
                   style={{ margin: "2vh", width: "12vh" }}
                   onClick={() => navigate("/dashboard/finalApproval")}
@@ -350,7 +358,7 @@ const FinalDetails = () => {
                   size="large"
                   color="warning"
                 >
-                  Close
+                  {t("Close")}
                 </Button>
               </div>
             )}

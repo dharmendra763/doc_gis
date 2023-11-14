@@ -34,11 +34,19 @@ const FinalApproval = () => {
   const [allRevs, setAllRevs] = useState([]);
   const [currentWorkflowId, setCurrentWorkflowId] = useState("");
   const [currentWorkflowPrefix, setCurrentWorkflowPrefix] = useState("");
+  const [workFlowStatus, setWorkFlowStatus] = useState([]);
   const apiUrl = process.env.REACT_APP_BASE_URL;
 
   useEffect(() => {
     fetchReviewerData();
   }, []);
+
+  // useEffect(() => {
+  //   getFormsFilledData();
+
+  // }, [currentWorkflowId])
+
+
 
   const fetchReviewerData = async () => {
     let adminData = localStorage.getItem("adminInfo");
@@ -67,8 +75,8 @@ const FinalApproval = () => {
     console.log("allUD", allUD);
 
     let statusD = StatusParseData(item?.initiator_status);
+
     setStatusCheck(statusD);
-    // console.log("item.initiator_status",item?.initiator_status);
     console.log("statusD", statusD);
 
     setWfSection(true);
@@ -109,12 +117,42 @@ const FinalApproval = () => {
 
     return formattedData;
   };
-  console.log(statusCheck)
 
+  const getFormsFilledData = async () => {
+    console.log(statusCheck)
+    let pr = statusCheck.map((item) => {
+      // try {
+      return axios.get(
+        `${apiUrl}/fetch-data/${workFlowD?.form_name}/${item?.id}/${workFlowD?.id}`
+      );
+      //   console.log(response.data)
+      //   // setFData(response?.data);
+      //   setWorkFlowStatus((status) => {
+      //     if (status) {
+      //       return ([...status, response.data])
+      //     } else {
+      //       [response.data]
+      //     }
+
+      //   })
+      //   // setWfD(wfAllD);
+      // } catch (error) {
+      //   console.error("Error fetching data:", error);
+      // }
+    })
+
+    //   const jk = await Promise.all(pr)
+
+    //   console.log(jk)
+
+    //   setWorkFlowStatus(jk.map(j => j.data))
+    // }
+    // console.log(workFlowStatus)
+  }
   return (
     <>
       <Helmet>
-        <title>Final Approval Panel</title>
+        <title>{t("Final Approval Panel")}</title>
       </Helmet>
       <Container>
         <Stack
@@ -197,6 +235,9 @@ const FinalApproval = () => {
                           <TableCell align="center">{item?.name}</TableCell>
 
                           <TableCell align="center">
+                            {/* {
+                              workFlowStatus
+                            } */}
                             {/* {statusCheck?.map((statt) => {
                               if ( */}
                             {
@@ -274,7 +315,7 @@ const FinalApproval = () => {
                                 );
                               }}
                             >
-                              View
+                              {t("View")}
                             </Button>
                           </TableCell>
                         </TableRow>

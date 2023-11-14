@@ -16,7 +16,7 @@ export function fPercent(number) {
   const format = number ? numeral(Number(number) / 100).format('0.0%') : '';
 
   return result(format, '.0');
-
+  
 }
 
 export function fShortenNumber(number) {

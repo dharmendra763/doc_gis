@@ -35,10 +35,21 @@ import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
 import { tableIcons } from "src/constants/tableIcons";
 import MaterialTable from "material-table";
-import { NativeSelect } from '@mui/material';
 import { Select as AntSelect } from 'antd';
 import { getFormDetails } from "src/http/Apis";
 
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  height: 220,
+  bgcolor: "background.paper",
+  borderRadius: "8px",
+  boxShadow: 24,
+  p: 4,
+};
 
 const WorkflowManagement = () => {
   const { t } = useTranslation();
@@ -95,18 +106,7 @@ const WorkflowManagement = () => {
     }
   }
 
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    height: 220,
-    bgcolor: "background.paper",
-    borderRadius: "8px",
-    boxShadow: 24,
-    p: 4,
-  };
+  
 
   useEffect(() => {
     // Check if all values are not null or empty
@@ -149,12 +149,14 @@ const WorkflowManagement = () => {
         .get(`${apiUrl}/user/${initiarRole1}`)
         .then((res) => {
           // console.log(res.data);
-          const options = res.data.map((item) => ({
+          let options = res.data.map((item) => ({
             label: `${item.Fname} ${item.Lname}`,
             value: `${item.u_id} - ${item.Fname} ${item.Lname}`,
           }));
+          options = options.filter((option, index) => index === options.findIndex((optionf) => optionf.value === option.value))
           if (!isUpdate) {
             setSelectedUsers(options.map((i) => i.value));
+
           }
           setUserList(options);
         })
@@ -441,9 +443,17 @@ const WorkflowManagement = () => {
   }
 
   const handleSelectChange = (event) => {
-    setSelectedUsers(event);
+    if (event.includes("All users")) {     
+      if(selectedUsers.length === userList.length)  {
+        setSelectedUsers([]);
+      } else {
+        setSelectedUsers([...userList.map((i) => i.value)])
+      }
+      // console.log([...userList.map((i) => i.value)])
+    } else {
+      setSelectedUsers(event);
+    }
   };
-
 
   const handleAdminSelectChange = (event) => {
     const { value } = event.target;
@@ -463,12 +473,10 @@ const WorkflowManagement = () => {
       });
     // console.log("GROUP NAME", wfGroup);
   };
-
   const handleGeneratePDF = () => {
     const contentState = editorState.getCurrentContent();
     const contentRaw = convertToRaw(contentState);
     const contentHTML = draftToHtml(contentRaw);
-
     if (contentHTML) {
       return contentHTML;
     } else {
@@ -510,7 +518,6 @@ const WorkflowManagement = () => {
       const blocksFromHtml = htmlToDraft(rowData?.pdfContent);
       const { contentBlocks, entityMap } = blocksFromHtml;
       const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
-
       const newEditorState = EditorState.createWithContent(contentState);
       setEditorState(newEditorState);
     }
@@ -533,11 +540,10 @@ const WorkflowManagement = () => {
       });
   };
 
-
   return (
     <>
       <Helmet>
-        <title>WorkflowManagement</title>
+        <title>{t("WorkflowManagement")}</title>
       </Helmet>
       <Container>
         <Stack
@@ -722,39 +728,10 @@ const WorkflowManagement = () => {
                       placeholder="Please Select Users"
                       onChange={handleSelectChange}
                       value={selectedUsers}
-                      options={userList}
+                      options={[{ label: "All users", value: "All users" }, ...userList]}
                       allowClear
                       maxTagCount='responsive'
                     />
-                    {/* <InputLabel id="initiator-role2">
-                      {t("Initiator all Users")}
-                    </InputLabel>
-                    <NativeSelect
-                      style={{ height: 150 }}
-                      // multiple={true}
-                      inputProps={{
-                        multiple: true,
-                        onChange: handleSelectChange,
-                        value: selectedUsers,
-                        style: {
-                          height: "90%",
-                          marginBottom: "auto"
-                        }
-                      }}
-                      labelid="initiator-role2"
-                      id="initiator-role2"
-                      value={selectedUsers}
-                      variant="outlined"
-                      // onChange={handleSelectChange}
-                      label={t("Initiator all Users")}
-                    >
-                      {
-                        userList && userList.length > 0 ? userList?.map((item, index) => <option selected={selectedUsers?.includes(item.value)} key={index} value={item.value}>{item.label} </option>) : []
-                      }
-                    </NativeSelect> */}
-                    {/* <Checkbox
-                        checked={selectedUsers.includes(item.value)}
-                      /> */}
                   </FormControl>
                 </Grid>
 
@@ -923,14 +900,22 @@ const WorkflowManagement = () => {
             <Scrollbar>
               <TableContainer sx={{ minWidth: 800 }}>
                 <MaterialTable
-                localization={
-                  {
+                  localization={{
                     header: {
-                      actions: t("Actions")
+                      actions: t("Actions"),
                     },
-                    
-                  }
-                }
+                    pagination: {
+                      labelRowsPerPage: t("Rows per page"),
+                      labelRowsSelect: t("rows"),
+                    },
+                    toolbar: {
+                      searchPlaceholder: t("Search"),
+                    },
+                    body: {
+                      deleteTooltip: t("Delete Navigation"),
+                      editTooltip: t("Edit Navigation"),
+                    },
+                  }}
                   labelRowsPerPage={t("Rows per page")}
                   title=""
                   columns={[
