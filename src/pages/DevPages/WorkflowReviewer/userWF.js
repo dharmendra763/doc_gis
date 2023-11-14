@@ -19,18 +19,16 @@ import { useTranslation } from "react-i18next";
 const UserWorkFlow = () => {
   const navigate = useNavigate();
   const { uid } = useParams();
-  const [workflowId, formName] = uid.split("&");
-
+  const [workflowId, formName, userId] = uid.split("&");
   const [fData, setFData] = useState([]);
   const [wfD, setWfD] = useState({});
-  const [btnEnable, setEnable] = useState(false);
+  // const [btnEnable, setEnable] = useState(false);
   const { t } = useTranslation();
   let adminD = localStorage.getItem("adminInfo");
   let finalAdminD = JSON.parse(adminD);
-  const var_myName = finalAdminD?.full_name;
   const var_myUname = finalAdminD?.username;
   const var_mySign = finalAdminD?.sign;
-  const username = finalAdminD?.username;
+  const adminUserId = finalAdminD?.id;
 
   const apiUrl = process.env.REACT_APP_BASE_URL;
   const apiUploadUrl = process.env.REACT_APP_UPLOAD_URL;
@@ -47,10 +45,10 @@ const UserWorkFlow = () => {
       if (response) {
         console.log(response);
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
-  const callARApi = async (id, data) => {
+  const callReviewApprovalApi = async (id, data) => {
     try {
       const url = `${apiUrl}/reviewer-approval/${wfD.form_name}/${id}`;
       const response = await axios.put(url, data);
@@ -86,7 +84,7 @@ const UserWorkFlow = () => {
     const data = { username, approvalStatus };
 
     try {
-      await callARApi(id, data);
+      await callReviewApprovalApi(id, data);
       await reviewStatus(id);
       // await workflowUpdate("approve")
       await getData();
@@ -95,33 +93,27 @@ const UserWorkFlow = () => {
     }
   };
 
-  const workflowUpdate = async (status) => {
-    const selectedWf = JSON.parse(localStorage.getItem("selectedWf"));
+  // const workflowUpdate = async (status) => {
+  //   const selectedWf = JSON.parse(localStorage.getItem("selectedWf"));
 
-    const workflowId1 = workflowId;
-    let intiatorStatus = JSON.parse(selectedWf.initiator_status);
-    const reviewer_status = selectedWf.reviewer_status;
+  //   const workflowId1 = workflowId;
+  //   let intiatorStatus = JSON.parse(selectedWf.initiator_status);
+  //   const reviewer_status = selectedWf.reviewer_status;
 
+  //   for (let i = 0; i < intiatorStatus[0].reviewer.length; i++) {
 
-    for (let i = 0; i < intiatorStatus[0].reviewer.length; i++) {
+  //     if (intiatorStatus[0].reviewer[i].name === username) {
+  //       intiatorStatus[0].reviewer[i].status = status
+  //     }
+  //   }
+  //   console.log(JSON.stringify(intiatorStatus))
 
-      if (intiatorStatus[0].reviewer[i].name === username) {
-        intiatorStatus[0].reviewer[i].status = status
-      }
-    }
-    console.log(JSON.stringify(intiatorStatus))
-
-
-
-    const responseWF = await axios.put(`${apiUrl}/workflow-update-reviewer`, {
-      intiatorStatus,
-      workflowId: workflowId1,
-      intiatorStatus: JSON.stringify(reviewer_status)
-    });
-
-
-
-  }
+  //   const responseWF = await axios.put(`${apiUrl}/workflow-update-reviewer`, {
+  //     intiatorStatus,
+  //     workflowId: workflowId1,
+  //     intiatorStatus: JSON.stringify(reviewer_status)
+  //   });
+  // }
 
   const handleReject = async (id) => {
     const username = var_myUname;
@@ -129,7 +121,7 @@ const UserWorkFlow = () => {
     const data = { username, approvalStatus };
 
     try {
-      await callARApi(id, data);
+      await callReviewApprovalApi(id, data);
       await getData();
       // await workflowUpdate("rejected")
     } catch (error) {
@@ -138,24 +130,31 @@ const UserWorkFlow = () => {
   };
 
   const getData = async () => {
-    console.log("HERE : I WANT :: ", finalAdminD);
-    const id = finalAdminD?.id;
-    const str = `${uid}`;
-    const [item1, item2, item3] = str.split("&");
-    const responseWF = await axios.get(`${apiUrl}/workflow/${item1}`);
-    let wfAllD = responseWF.data;
-    setWfD(wfAllD);
-    const jsonData = {
-      item1,
-      item2,
-      item3,
-    };
-
-    let response;
     try {
-      response = await axios.get(
-        `${apiUrl}/fetch-data/${jsonData?.item2}/${jsonData?.item1}/${jsonData?.item3}`
+      console.log("HERE : I WANT :: ", finalAdminD);
+      const responseWF = await axios.get(`${apiUrl}/workflow/${workflowId}`);
+      let wfAllD = responseWF.data;
+      wfAllD.status = JSON.parse(wfAllD.status);
+      wfAllD.initiator_status = JSON.parse(wfAllD.initiator_status);
+      wfAllD.admin_status = JSON.parse(wfAllD.admin_status);
+      let response = await axios.get(
+        `${apiUrl}/fetch-data/${formName}/${workflowId}/${userId}`
       );
+      const currentUserIndex = wfAllD.status.findIndex((adminUser)=>adminUser.s_no == adminUserId);
+      response.data.forEach((formData)=>{
+          if (formData.RejectedBy) {
+            formData.disableAction = true
+          } else {
+            if (formData.ApprovedBy === null) {
+              let isCurrentUserFirstReviewer = currentUserIndex === 0;
+              if (isCurrentUserFirstReviewer) {
+                formData.disableAction = false;
+              }
+            } else {
+              formData.disableAction = formData?.ApprovedBy?.split(",").length -1 === currentUserIndex
+            }
+          }
+      })
       setFData(response?.data);
       setWfD(wfAllD);
     } catch (error) {
@@ -215,7 +214,8 @@ const UserWorkFlow = () => {
                                 key.toUpperCase() !== "USERID" &&
                                 key.toUpperCase() !== "APPROVEDBY" &&
                                 key.toUpperCase() !== "REJECTEDBY" &&
-                                key.toUpperCase() !== "FINALAPPROVAL"
+                                key.toUpperCase() !== "FINALAPPROVAL" &&
+                                key !== "disableAction"
                             )
                             .map((key) => (
                               <TableCell
@@ -238,7 +238,9 @@ const UserWorkFlow = () => {
                           <TableRow key={rowIndex}>
                             {/* Display serial number starting from 1 */}
                             <TableCell>{rowIndex + 1}</TableCell>
-                            <TableCell>{wfD.workflow_prefix} {rowData.id}</TableCell>
+                            <TableCell>
+                              {wfD.workflow_prefix} {rowData.id}
+                            </TableCell>
                             <TableCell>{wfD.workflow_name}</TableCell>
                             {Object.entries(rowData)
                               .filter(
@@ -248,12 +250,13 @@ const UserWorkFlow = () => {
                                   key.toUpperCase() !== "USERID" &&
                                   key.toUpperCase() !== "APPROVEDBY" &&
                                   key.toUpperCase() !== "REJECTEDBY" &&
-                                  key.toUpperCase() !== "FINALAPPROVAL"
+                                  key.toUpperCase() !== "FINALAPPROVAL" &&
+                                  key !== "disableAction"
                               )
                               .map(([key, value]) => (
                                 <TableCell key={key}>
                                   {typeof value === "string" &&
-                                    /\.(jpg|jpeg|png|gif|bmp)$/i.test(value) ? (
+                                  /\.(jpg|jpeg|png|gif|bmp)$/i.test(value) ? (
                                     <ImageViewComponent imageUrl={value} />
                                   ) : (
                                     value
@@ -283,7 +286,7 @@ const UserWorkFlow = () => {
                               ) : null}
                             </TableCell>
                             <TableCell>
-                              {console.log(
+                              {/* {console.log(
                                 "rowData.ApprovedBy:",
                                 rowData.ApprovedBy
                               )}
@@ -291,12 +294,12 @@ const UserWorkFlow = () => {
                                 "rowData.RejectedBy:",
                                 rowData.RejectedBy
                               )}
-                              {console.log("var_myUname:", var_myUname)}
+                              {console.log("var_myUname:", var_myUname)} */}
 
                               {rowData.ApprovedBy &&
-                                rowData.ApprovedBy.split(",")
-                                  .map((name) => name.trim())
-                                  .includes(var_myUname) ? (
+                              rowData.ApprovedBy.split(",")
+                                .map((name) => name.trim())
+                                .includes(var_myUname) ? (
                                 <Typography
                                   variant="body1"
                                   style={{ color: "green", fontWeight: "bold" }}
@@ -322,7 +325,7 @@ const UserWorkFlow = () => {
                                     size="large"
                                     color="success"
                                     onClick={() => handleApprove(rowData.id)}
-                                    disabled={btnEnable}
+                                    disabled={rowData.disableAction}
                                   >
                                     {t("Approve")}
                                   </Button>
@@ -332,7 +335,7 @@ const UserWorkFlow = () => {
                                     size="large"
                                     color="error"
                                     onClick={() => handleReject(rowData.id)}
-                                    disabled={btnEnable}
+                                    disabled={rowData.disableAction}
                                   >
                                     {t("Reject")}
                                   </Button>

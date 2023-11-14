@@ -2,7 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Card, Container, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { Table, TableContainer, TableHead, TableBody, TableCell, TableRow, CircularProgress } from "@material-ui/core";
+import {
+  Table,
+  TableContainer,
+  TableHead,
+  TableBody,
+  TableCell,
+  TableRow,
+  CircularProgress,
+} from "@material-ui/core";
 import { Button } from "@mui/material";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -10,12 +18,11 @@ import ImageViewComponent from "./ImageView";
 import { generateSignsHTML, handleGeneratePDF } from "./Utils";
 import { useTranslation } from "react-i18next";
 
-
 const FinalDetails = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { uid } = useParams();
-  const [wfID, formName, itemId] = uid.split("&");
+  const [workflowId, formName, userId] = uid.split("&");
   const [fData, setFData] = useState([]);
   const [wfD, setWfD] = useState({});
   const [btnEnable, setEnable] = useState(false);
@@ -23,14 +30,14 @@ const FinalDetails = () => {
   const [var_myUname, setVarMyUname] = useState("");
   const [var_mySign, setVarMySign] = useState("");
   const [loading, setLoading] = useState(false);
-  const reviewers = wfD?.reviewer?.split(',');
+  const reviewers = wfD?.reviewer?.split(",");
   const [formInputs, setFormInputs] = useState({});
 
   const apiUrl = process.env.REACT_APP_BASE_URL;
 
   useEffect(() => {
     getData();
-    getFormData()
+    getFormData();
   }, []);
 
   const callARApi = async (id, status) => {
@@ -44,7 +51,6 @@ const FinalDetails = () => {
     }
   };
 
-
   const handleApprove = async (id) => {
     const status = "Approved";
     try {
@@ -57,7 +63,6 @@ const FinalDetails = () => {
     } catch (error) {
       console.error("Error Approving:", error);
     }
-
   };
 
   const handleReject = async (id) => {
@@ -72,17 +77,25 @@ const FinalDetails = () => {
 
   const handleDownloadPDF = async (id, rowData) => {
     let fieldsToIncludeInFinalDocument = {};
-    formInputs?.inputs.forEach(input => {
+    formInputs?.inputs.forEach((input) => {
       if (input?.includeInFinal && input?.name) {
-        fieldsToIncludeInFinalDocument[input?.name] = rowData[input?.name]
+        fieldsToIncludeInFinalDocument[input?.name] = rowData[input?.name];
       }
-    })
-    let identifier = `${wfD.workflow_prefix}-${wfD.id}`
+    });
+    let identifier = `${wfD.workflow_prefix}-${wfD.id}`;
     setLoading(true);
 
     generateSignsHTML(wfD, id)
       .then((combinedHTML) => {
-        handleGeneratePDF(uid, wfD, var_myName, var_mySign, combinedHTML, fieldsToIncludeInFinalDocument, identifier);
+        handleGeneratePDF(
+          uid,
+          wfD,
+          var_myName,
+          var_mySign,
+          combinedHTML,
+          fieldsToIncludeInFinalDocument,
+          identifier
+        );
       })
       .catch((error) => {
         console.error(`Error generating HTML content: ${error.message}`);
@@ -90,7 +103,7 @@ const FinalDetails = () => {
       .finally(() => {
         setLoading(false);
       });
-  }
+  };
 
   const getData = async () => {
     let adminD = localStorage.getItem("adminInfo");
@@ -100,22 +113,12 @@ const FinalDetails = () => {
     setVarMyUname(finalAdminD?.username);
     setVarMySign(finalAdminD?.sign);
     const id = finalAdminD?.id;
-    const str = `${uid}`;
-    const [item1, item2, item3] = str.split("&");
-    console.log(str.split("&"))
-    const responseWF = await axios.get(`${apiUrl}/workflow/${item1}`);
+    const responseWF = await axios.get(`${apiUrl}/workflow/${workflowId}`);
     let wfAllD = responseWF.data;
     setWfD(wfAllD);
-    const jsonData = {
-      item1,
-      item2,
-      item3,
-    };
-
-    let response;
     try {
-      response = await axios.get(
-        `${apiUrl}/fetch-data/${jsonData?.item2}/${jsonData?.item1}/${jsonData?.item3}`
+      let response = await axios.get(
+        `${apiUrl}/fetch-data/${formName}/${workflowId}/${userId}`
       );
       setFData(response?.data);
       setWfD(wfAllD);
@@ -127,19 +130,21 @@ const FinalDetails = () => {
   const getFormData = async () => {
     if (formName) {
       try {
-        const responseWF = await axios.get(`https://mainpcisv.pcisv.ro/formdetails?name=${formName}`);
+        const responseWF = await axios.get(
+          `https://mainpcisv.pcisv.ro/formdetails?name=${formName}`
+        );
         const response = responseWF?.data?.formDetails;
         setFormInputs({
           id: response?.id,
           name: response?.name,
           inputs: JSON.parse(response?.inputs),
-          select_values: JSON.parse(response.select_vlaues)
+          select_values: JSON.parse(response.select_vlaues),
         });
       } catch (error) {
         console.log(error);
       }
     }
-  }
+  };
 
   console.log(fData);
 
@@ -178,9 +183,15 @@ const FinalDetails = () => {
                       <TableHead>
                         <TableRow>
                           {/* Add a header for SN */}
-                          <TableCell style={{ fontWeight: "bold" }}>SN</TableCell>
-                          <TableCell style={{ fontWeight: "bold" }}>WPfx</TableCell>
-                          <TableCell style={{ fontWeight: "bold" }}>Workflow Name</TableCell>
+                          <TableCell style={{ fontWeight: "bold" }}>
+                            SN
+                          </TableCell>
+                          <TableCell style={{ fontWeight: "bold" }}>
+                            WPfx
+                          </TableCell>
+                          <TableCell style={{ fontWeight: "bold" }}>
+                            Workflow Name
+                          </TableCell>
                           {Object.keys(fData[0])
                             .filter(
                               (key) =>
@@ -192,15 +203,22 @@ const FinalDetails = () => {
                                 key.toUpperCase() !== "FINALAPPROVAL"
                             )
                             .map((key) => (
-                              <TableCell key={key} style={{ fontWeight: "bold" }}>
+                              <TableCell
+                                key={key}
+                                style={{ fontWeight: "bold" }}
+                              >
                                 {key.toUpperCase()}
                               </TableCell>
                             ))}
                           <TableCell colSpan={2} style={{ fontWeight: "bold" }}>
                             {t("Reviewer's Status")}
                           </TableCell>
-                          <TableCell style={{ fontWeight: "bold" }}>{t("REV_COUNTS")}</TableCell>
-                          <TableCell style={{ fontWeight: "bold" }}>{t("Actions")}</TableCell>
+                          <TableCell style={{ fontWeight: "bold" }}>
+                            {t("REV_COUNTS")}
+                          </TableCell>
+                          <TableCell style={{ fontWeight: "bold" }}>
+                            {t("Actions")}
+                          </TableCell>
                         </TableRow>
                       </TableHead>
                       {/*TABLE BODY STARTS*/}
@@ -209,7 +227,9 @@ const FinalDetails = () => {
                           <TableRow key={rowIndex}>
                             {/* Display serial number starting from 1 */}
                             <TableCell>{rowIndex + 1}</TableCell>
-                            <TableCell>{wfD.workflow_prefix} {rowData.id}</TableCell>
+                            <TableCell>
+                              {wfD.workflow_prefix} {rowData.id}
+                            </TableCell>
                             <TableCell>{wfD.workflow_name}</TableCell>
                             {Object.entries(rowData)
                               .filter(
@@ -224,7 +244,7 @@ const FinalDetails = () => {
                               .map(([key, value]) => (
                                 <TableCell key={key}>
                                   {typeof value === "string" &&
-                                    /\.(jpg|jpeg|png|gif|bmp)$/i.test(value) ? (
+                                  /\.(jpg|jpeg|png|gif|bmp)$/i.test(value) ? (
                                     <ImageViewComponent imageUrl={value} />
                                   ) : (
                                     value
@@ -232,15 +252,56 @@ const FinalDetails = () => {
                                 </TableCell>
                               ))}
                             <TableCell colSpan={2}>
-                              {
-                                reviewers && reviewers.length > 0 && reviewers.map((reviewer, index) => {
-                                  (rowData?.ApprovedBy?.includes?.(reviewer)) ?
-                                    <span key={index} style={{ backgroundColor: "lightgreen", marginRight: "10px" }}>{reviewer} </span>
-                                    :
-                                    <span key={index} style={{ backgroundColor: "lightcoral", marginRight: "10px" }}> {reviewer} </span>
-
-                                })
-                              }
+                              {reviewers &&
+                                reviewers.length > 0 &&
+                                reviewers.map((reviewer, index) => {
+                                  if (rowData?.ApprovedBy?.includes?.(reviewer)) {
+                                    return (
+                                      <span
+                                      key={index}
+                                      style={{
+                                        backgroundColor: "lightgreen",
+                                        marginRight: "10px",
+                                      }}
+                                    >
+                                      {reviewer}
+                                    </span>
+                                    )
+                                  } else if(rowData?.RejectedBy?.includes?.(reviewer)) {
+                                    return(
+                                      <span
+                                      key={index}
+                                      style={{
+                                        backgroundColor: "lightcoral",
+                                        marginRight: "10px",
+                                      }}
+                                    >
+                                      {reviewer}
+                                    </span>
+                                    )
+                                  }
+                                  // return rowData?.ApprovedBy?.includes?.(reviewer) ? (
+                                  //   <span
+                                  //     key={index}
+                                  //     style={{
+                                  //       backgroundColor: "lightgreen",
+                                  //       marginRight: "10px",
+                                  //     }}
+                                  //   >
+                                  //     {reviewer}
+                                  //   </span>
+                                  // ) : (
+                                  //   <span
+                                  //     key={index}
+                                  //     style={{
+                                  //       backgroundColor: "lightcoral",
+                                  //       marginRight: "10px",
+                                  //     }}
+                                  //   >
+                                  //     {reviewer}
+                                  //   </span>
+                                  // );
+                                })}
                               {/* {rowData.ApprovedBy ? (
                                 <span style={{ backgroundColor: "lightgreen", marginRight: "10px" }}>
                                   {rowData.ApprovedBy}
@@ -254,37 +315,79 @@ const FinalDetails = () => {
                             </TableCell>
                             <TableCell style={{ fontWeight: "bold" }}>
                               {(() => {
-                                const approvedCount = rowData.ApprovedBy ? rowData.ApprovedBy.split(',').length : 0;
-                                const rejectedCount = rowData.RejectedBy ? rowData.RejectedBy.split(',').length : 0;
-                                const totalCount = approvedCount + rejectedCount;
-                                const reviewerCount = wfD?.reviewer ? wfD.reviewer.split(',').length : 0;
+                                const approvedCount = rowData.ApprovedBy
+                                  ? rowData.ApprovedBy.split(",").length
+                                  : 0;
+                                const rejectedCount = rowData.RejectedBy
+                                  ? rowData.RejectedBy.split(",").length
+                                  : 0;
+                                const totalCount =
+                                  approvedCount + rejectedCount;
+                                const reviewerCount = wfD?.reviewer
+                                  ? wfD.reviewer.split(",").length
+                                  : 0;
                                 return `${totalCount} / ${reviewerCount}`;
                               })()}
                             </TableCell>
                             <TableCell>
                               {(() => {
-                                const approvedCount = rowData.ApprovedBy ? rowData.ApprovedBy.split(',').length : 0;
-                                const rejectedCount = rowData.RejectedBy ? rowData.RejectedBy.split(',').length : 0;
-                                const totalCount = approvedCount + rejectedCount;
-                                const reviewerCount = wfD?.reviewer ? wfD.reviewer.split(',').length : 0;
+                                const approvedCount = rowData.ApprovedBy
+                                  ? rowData.ApprovedBy.split(",").length
+                                  : 0;
+                                const rejectedCount = rowData.RejectedBy
+                                  ? rowData.RejectedBy.split(",").length
+                                  : 0;
+                                const totalCount =
+                                  approvedCount + rejectedCount;
+                                const reviewerCount = wfD?.reviewer
+                                  ? wfD.reviewer.split(",").length
+                                  : 0;
+
+                                if (rejectedCount > 0) {
+                                  return (
+                                    <Button
+                                      style={{ margin: "2vh", width: "12vh", padding: 3 }}
+                                      variant="contained"
+                                      size="large"
+                                      color="warning"
+                                      // onClick={() => handleApprove(rowData.id)}
+                                    >
+                                      Rejected
+                                    </Button>
+                                  );
+                                }
                                 if (totalCount < reviewerCount) {
                                   return (
                                     <Typography variant="body1">
                                       Waiting for reviewers
                                     </Typography>
                                   );
-                                } else if (totalCount === reviewerCount && rowData.finalApproval !== "None") {
+                                } else if (
+                                  totalCount === reviewerCount &&
+                                  rowData.finalApproval !== "None"
+                                ) {
                                   return (
                                     <>
                                       {loading ? (
-                                        <CircularProgress size={24} color="inherit" /> // Show circular progress when loading
+                                        <CircularProgress
+                                          size={24}
+                                          color="inherit"
+                                        /> // Show circular progress when loading
                                       ) : (
                                         <Button
-                                          style={{ margin: "2vh", width: "12vh" }}
+                                          style={{
+                                            margin: "2vh",
+                                            width: "12vh",
+                                          }}
                                           variant="contained"
                                           size="large"
                                           color="primary"
-                                          onClick={() => handleDownloadPDF(rowData.id, rowData)}
+                                          onClick={() =>
+                                            handleDownloadPDF(
+                                              rowData.id,
+                                              rowData
+                                            )
+                                          }
                                           disabled={btnEnable || loading}
                                         >
                                           Download PDF
@@ -292,8 +395,11 @@ const FinalDetails = () => {
                                       )}
                                     </>
                                   );
-                                }
-                                else if (totalCount === reviewerCount && rowData.RejectedBy && rowData.finalApproval === "None") {
+                                } else if (
+                                  totalCount === reviewerCount &&
+                                  rowData.RejectedBy &&
+                                  rowData.finalApproval === "None"
+                                ) {
                                   return (
                                     <>
                                       <Button
@@ -308,8 +414,10 @@ const FinalDetails = () => {
                                       </Button>
                                     </>
                                   );
-                                }
-                                else if (totalCount === reviewerCount && rowData.finalApproval === "None") {
+                                } else if (
+                                  totalCount === reviewerCount &&
+                                  rowData.finalApproval === "None"
+                                ) {
                                   return (
                                     <>
                                       <Button
@@ -317,7 +425,9 @@ const FinalDetails = () => {
                                         variant="contained"
                                         size="large"
                                         color="success"
-                                        onClick={() => handleApprove(rowData.id)}
+                                        onClick={() =>
+                                          handleApprove(rowData.id)
+                                        }
                                         disabled={btnEnable}
                                       >
                                         Approve
@@ -345,7 +455,6 @@ const FinalDetails = () => {
                       {/*TABLE BODY ENDS*/}
                     </Table>
                   </TableContainer>
-
                 </div>
               </>
             ) : (
