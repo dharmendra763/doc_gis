@@ -9,7 +9,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import { Helmet } from "react-helmet-async";
@@ -167,7 +167,7 @@ function MobileRoutes() {
           </Typography>
           {buttonSets?.length > 0 &&
             buttonSets?.map((buttonSet, index) => (
-              <>
+              <Fragment key={index}>
                 <Typography
                   variant="h5"
                   width="100%"
@@ -213,7 +213,7 @@ function MobileRoutes() {
                     <DeleteIcon />
                   </IconButton>
                 </Box>
-              </>
+              </Fragment>
             ))}
           <Box
             sx={{

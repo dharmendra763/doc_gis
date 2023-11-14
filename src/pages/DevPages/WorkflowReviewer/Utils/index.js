@@ -1,5 +1,4 @@
 import axios from "axios";
-import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 const apiUrl = process.env.REACT_APP_BASE_URL;

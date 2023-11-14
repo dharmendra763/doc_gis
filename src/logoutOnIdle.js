@@ -1,14 +1,14 @@
-import React from "react";
+import React, {useEffect, useRef} from "react";
 import { Outlet } from "react-router-dom";
 
 const IdleMonitor = ({ onIdle }) => {
-    let idleRef = React.useRef(0).current;
+    let idleRef = useRef(0);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const idleInterval = setInterval(timerIncrement, 1000); // 1 minute
         function timerIncrement() {
-            idleRef += 1;
-            if (idleRef > 30*60) {
+            idleRef.current += 1;
+            if (idleRef.current > 30*60) {
                 // if (idleRef > 20) {
                 // 30 minutes
                 // User has been idle for more than a minute
@@ -16,10 +16,15 @@ const IdleMonitor = ({ onIdle }) => {
                 onIdle();
                 clearInterval(idleInterval);
             }
+
+            if(idleRef.current > 30*60-10) {
+                // show notification with time remaining
+                // TODO
+            }
         }
 
         function resetIdleRef() {
-            idleRef = 0;
+            idleRef.current = 0;
         }
 
         document.body.addEventListener('mousemove', resetIdleRef);
@@ -32,11 +37,7 @@ const IdleMonitor = ({ onIdle }) => {
         };
     }, [onIdle]);
 
-    return (
-        <>
-            <Outlet />
-        </>
-    );
+    return (<Outlet />);
 };
 
 export default IdleMonitor;

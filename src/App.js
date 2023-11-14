@@ -37,7 +37,7 @@ import { getToken } from "firebase/messaging";
 import MobileRoutes from "./pages/DevPages/MobileRoutes/MobileRoutes";
 import AdminWorkflowComponent from "./pages/DevPages/Admin_WF_Initiator/index";
 import { useTranslation } from "react-i18next";
-import IdleMonitor from "./utils/logoutOnIdle";
+import IdleMonitor from "./logoutOnIdle";
 import FillWorkflow from "./pages/DevPages/FillWorkflow";
 import WorkflowDetails from "./pages/DevPages/FillWorkflow/workflowdetails";
 import ForgetPassword from "./pages/ForgetPassword";
